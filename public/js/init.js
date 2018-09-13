@@ -1,28 +1,39 @@
 $(function () {
-    var socket = io.connect();
+    let socket = io.connect();
 
+
+    // Set game state to user
     socket.on('connect', function(){
-    	initMessageHistory(socket.io.engine.id);
+    	initGameState(socket.io.engine.id);
     });
 
-    function initMessageHistory(id){
-    	socket.emit('get history', id);
+    function initGameState(id){
+    	socket.emit('get state', id);
     }
 
-    $('form').submit(function(){
-      socket.emit('chat message', $('#input').val());
-      $('#input').val('');
-      return false;
+    socket.on('set game state', function(state){
+    	for(let i = 0; i  < state.length; i++){
+    		$('.game-point').eq(i).text(state[i]);
+    	}
+    });
+    //
+
+
+
+    $('.game-point').on('click', function(){
+    	if( $(this).text() != '') {
+    		return false;
+    	}
+    	let index = $(this).index();
+
+    	$(this).text('O');
+    	socket.emit('set state', 'O', index);
+    	// checkWin('O');
     });
 
-    socket.on('chat message', function(msg){
-      $('#messages').append($('<li>').text(msg));
-    });
 
-    socket.on('init history', function(history){
-      history.map(function(message){
-      	$('#messages').append($('<li>').text(message));
-      });
-    });
+    function checkWin(text) {
+    	console.log('check here');
+    }
 
   });
