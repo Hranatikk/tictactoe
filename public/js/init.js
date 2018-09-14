@@ -1,5 +1,9 @@
 $(function () {
-    let socket = io.connect();
+    let socket = io.connect(),
+        canPlay = true,
+        userId,
+        userSymbol = '',
+        userTurn = false;
 
 
     // Set game state to user
@@ -19,17 +23,55 @@ $(function () {
     //
 
 
+    // Deny user to play this round
+    socket.on('game going', function(){
+        alert('game is going already');
+        canPlay = false;
+    });
+    //
 
+
+
+    //Init player
+    socket.on('init player', function(id, symbol, turn){
+        userSymbol = symbol;
+        userId = id;
+        userTurn = turn;
+    })
+    //
+
+
+
+    //end the game when one of the players is disconnected
+    socket.on('game over', function(){
+        alert('game over cause one of the players if disconnected');
+        canPlay = false;
+    });
+    //
+
+
+    //change turn
+    socket.on('change turn', function(){
+        userTurn = true;
+    });
+    //
+
+
+    // click trigger
     $('.game-point').on('click', function(){
-    	if( $(this).text() != '') {
+    	if( $(this).text() != '' || !canPlay || !userTurn) {
     		return false;
     	}
     	let index = $(this).index();
 
-    	$(this).text('O');
-    	socket.emit('set state', 'O', index);
+    	$(this).text(userSymbol);
+    	socket.emit('set state', userSymbol, index);
+
+        socket.emit('change turn', userId);
+        userTurn = false;
     	// checkWin('O');
     });
+    //
 
 
     function checkWin(text) {
