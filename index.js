@@ -86,6 +86,7 @@ io.on('connection', function(socket){
   //change turn
   socket.on('change turn', function(id){
     gameUsers[0]['id'] == id ? io.to(`${gameUsers[1]['id']}`).emit('change turn') : io.to(`${gameUsers[0]['id']}`).emit('change turn');
+    gameUsers[0]['id'] == id ? gameUsers[0]['turn'] = false : gameUsers[1]['turn'] = false; 
   });
   //
 
@@ -94,12 +95,22 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     if(socket.id == gameUsers[0]['id'] || socket.id == gameUsers[1]['id']){
 
-      socket.id == gameUsers[0]['id'] ? gameUsers[0]['symbol'] = null : gameUsers[1]['symbol'] = null;
-      socket.id == gameUsers[0]['id'] ? gameUsers[0]['turn'] = null : gameUsers[1]['turn'] = null;
-      socket.id == gameUsers[0]['id'] ? gameUsers[0]['id'] = null : gameUsers[1]['id'] = null;
+      if(socket.id == gameUsers[0]['id']){
+        gameUsers[0]['symbol'] = null;
+        gameUsers[0]['turn'] = null;
+        gameUsers[0]['id'] = null;
+        gameUsers[1]['turn'] = true;
+      } else {
+        gameUsers[1]['symbol'] = null;
+        gameUsers[1]['turn'] = null;
+        gameUsers[1]['id'] = null;
+        gameUsers[0]['turn'] = true;
+      }
       gameState = ['', '', '', '', '', '', '', '', ''];
       io.emit('set game state', gameState);
       io.emit('game over');
+
+      gameUsers[0]['id'] == socket.id ? io.to(`${gameUsers[1]['id']}`).emit('change turn') :  io.to(`${gameUsers[0]['id']}`).emit('change turn');
     }
   });
   //

@@ -44,8 +44,7 @@ $(function () {
 
     //end the game when one of the players is disconnected
     socket.on('game over', function(){
-        alert('game over cause one of the players if disconnected');
-        canPlay = false;
+        alert('game over cause one of the players if disconnected. Waiting for another user');
     });
     //
 
