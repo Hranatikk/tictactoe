@@ -68,13 +68,59 @@ $(function () {
 
         socket.emit('change turn', userId);
         userTurn = false;
-    	// checkWin('O');
+    	checkWin(userSymbol);
     });
     //
 
 
-    function checkWin(text) {
-    	console.log('check here');
+    //win-lose message
+    socket.on('you lose', function(){
+        alert('you lose');
+    });
+    socket.on('you win', function(){
+        alert('you win');
+    });
+    //
+
+
+    //draw
+    socket.on('draw', function(){
+        alert('draw');
+    });
+    //
+
+
+
+    // check win
+    function checkWin(symbol) {
+        let point = $('.game-point'),
+            gameEnd = false,
+            isWin = false;
+        
+        if( point.eq(0).text() == symbol && point.eq(1).text() == symbol && point.eq(2).text() == symbol ||
+            point.eq(3).text() == symbol && point.eq(4).text() == symbol && point.eq(5).text() == symbol ||
+            point.eq(6).text() == symbol && point.eq(7).text() == symbol && point.eq(8).text() == symbol ||
+            point.eq(0).text() == symbol && point.eq(3).text() == symbol && point.eq(6).text() == symbol ||
+            point.eq(1).text() == symbol && point.eq(4).text() == symbol && point.eq(7).text() == symbol ||
+            point.eq(2).text() == symbol && point.eq(5).text() == symbol && point.eq(8).text() == symbol ||
+            point.eq(0).text() == symbol && point.eq(4).text() == symbol && point.eq(8).text() == symbol ||
+            point.eq(2).text() == symbol && point.eq(4).text() == symbol && point.eq(6).text() == symbol
+         ) {
+            gameEnd = true;
+            isWin = true;
+            socket.emit('user win', userId);
+        }
+        if(!gameEnd) {
+            let count = 0;
+            point.each(function(){
+                $(this).text() != '' ? count++ : count = count;
+            });
+            if(count == 9) {
+                gameEnd = true;
+                socket.emit('draw');
+            }
+        }
     }
+    //
 
   });

@@ -82,6 +82,25 @@ io.on('connection', function(socket){
   });
   //
 
+  //user win
+  socket.on('user win', function(userId){
+  	io.to(`${userId}`).emit('you win');
+  	gameUsers[0]['id'] == userId ? io.to(`${gameUsers[1]['id']}`).emit('you lose') : io.to(`${gameUsers[0]['id']}`).emit('you lose');
+
+  	gameState = ['', '', '', '', '', '', '', '', ''];
+    io.emit('set game state', gameState);
+  });
+  //
+
+
+  //draw
+   socket.on('draw', function(){
+   	io.emit('draw');
+   	gameState = ['', '', '', '', '', '', '', '', ''];
+    io.emit('set game state', gameState);
+   });
+  //
+
 
   //change turn
   socket.on('change turn', function(id){
