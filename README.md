@@ -2,13 +2,13 @@
 Tic Tac Toe game
 
 
-$npm install
+`$npm install`
 
-$node index.js
+`$node index.js`
 
-$npm install ngrok -g
+`$npm install ngrok -g`
 
-$ngrok http 3000 
+`$ngrok http 3000`
 
 ngrok will help you to play with another user
 
